@@ -16,4 +16,5 @@ All notable changes to Simple Arsenal Swap will be documented here.
 - Double-click Windows deployment tool using the existing `ssh minipc` workflow.
 - Shared Windows deployment launcher that validates and updates Simple Scrolling Loot,
   Better Loot Rolls, and Simple Arsenal Swap in one run.
+- Close the Windows deployment window automatically on success and keep it open on failure.
 - Custom Simple Arsenal Swap logo as the in-game addon icon.

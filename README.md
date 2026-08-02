@@ -73,4 +73,5 @@ suite for Simple Scrolling Loot, Better Loot Rolls, and Simple Arsenal Swap on
 MINIPC. If all tests pass, it stages and validates all three addons before
 synchronizing their current runtime files into the Classic Era AddOns folder.
 Unchanged files are left alone by Robocopy, and WoW SavedVariables are outside
-the synchronized addon folders.
+the synchronized addon folders. The window closes automatically after a
+successful run and stays open on an error so the failure message can be read.
