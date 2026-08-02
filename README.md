@@ -24,9 +24,12 @@ claimed as fully compatible.
 Right-click a configured item slot to clear it. A two-handed weapon automatically
 clears and disables the matching off-hand slot. If the selected hotkey already
 belongs to another action, the addon asks for confirmation before replacing it.
+Click the Arsenal A or Arsenal B heading to give that setup an optional custom
+name, then press Enter or click elsewhere; leaving it blank restores the default name.
 After the equipped items match the target arsenal, a green success message is
 shown in Blizzard's scrolling combat-text area (or in the UI error-message area
-when scrolling combat text is disabled or unavailable).
+when scrolling combat text is disabled or unavailable), using the custom arsenal
+name when one is configured.
 
 ## Intended combinations
 

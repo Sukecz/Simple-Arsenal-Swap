@@ -140,7 +140,7 @@ function Swap:OnEquipmentChanged()
 
     local targetKey = self.pendingTargetKey
     self:ClearSwapAttempt()
-    local arsenalName = targetKey == "B" and ns.L.ARSENAL_B or ns.L.ARSENAL_A
+    local arsenalName = ns.Database:GetSetName(targetKey)
     ns.ApiCompat:ShowCombatMessage(string.format(ns.L.SWAP_SUCCESS, arsenalName), 0.2, 1, 0.2)
     return true
 end

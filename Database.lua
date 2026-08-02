@@ -35,6 +35,18 @@ local function copyItem(item)
     }
 end
 
+local function sanitizeName(name)
+    if type(name) ~= "string" then
+        return nil
+    end
+
+    name = name:match("^%s*(.-)%s*$")
+    if name == "" or #name > 48 then
+        return nil
+    end
+    return name
+end
+
 local function sanitizeSet(set)
     set = type(set) == "table" and set or {}
     local main = copyItem(set.main)
@@ -51,6 +63,7 @@ local function sanitizeSet(set)
     end
 
     return {
+        name = sanitizeName(set.name),
         main = main,
         off = off,
     }
@@ -81,6 +94,33 @@ end
 
 function Database:GetSet(setKey)
     return self.data and self.data.sets and self.data.sets[setKey]
+end
+
+function Database:GetSetName(setKey)
+    local set = self:GetSet(setKey)
+    if set and set.name then
+        return set.name
+    end
+    return setKey == "B" and ns.L.ARSENAL_B or ns.L.ARSENAL_A
+end
+
+function Database:SetSetName(setKey, name)
+    local set = self:GetSet(setKey)
+    if not set then
+        return false
+    end
+
+    if type(name) == "string" and name:match("^%s*(.-)%s*$") == "" then
+        set.name = nil
+        return true
+    end
+
+    local sanitized = sanitizeName(name)
+    if not sanitized then
+        return false
+    end
+    set.name = sanitized
+    return true
 end
 
 function Database:SetItem(setKey, slotKey, item)

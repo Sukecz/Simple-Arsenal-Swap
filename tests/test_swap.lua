@@ -31,6 +31,9 @@ end
 function ns.Database:IsReady()
     return true
 end
+function ns.Database:GetSetName(key)
+    return key == "B" and "Damage" or "Tank"
+end
 
 ns.L = {
     ARSENAL_A = "Arsenal A",
@@ -78,7 +81,7 @@ assert(not ns.Swap:OnEquipmentChanged())
 assert(shownMessage == nil)
 inventory[16], inventory[17] = 2001, nil
 assert(ns.Swap:OnEquipmentChanged())
-assert(shownMessage == "Arsenal B equipped")
+assert(shownMessage == "Damage equipped")
 assert(ns.Swap.pendingTargetKey == nil)
 
 shownMessage = nil
@@ -89,6 +92,6 @@ assert(not ok and reason == "combat")
 assert(ns.Swap.pendingTargetKey == "B", "the protected combat macro path must record its target")
 inventory[16], inventory[17] = 2001, nil
 assert(ns.Swap:OnEquipmentChanged())
-assert(shownMessage == "Arsenal B equipped")
+assert(shownMessage == "Damage equipped")
 
 print("test_swap.lua: ok")

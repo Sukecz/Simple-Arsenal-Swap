@@ -5,6 +5,7 @@ local function loadModule(path)
     chunk("SimpleArsenalSwap", ns)
 end
 
+loadModule("Locales/enUS.lua")
 loadModule("Defaults.lua")
 loadModule("ApiCompat.lua")
 loadModule("Database.lua")
@@ -34,7 +35,7 @@ local twoHanded = {
 local db = ns.Database:Initialize({
     frame = { point = "INVALID", x = 9000, y = -9000 },
     sets = {
-        A = { main = validMain, off = validShield },
+        A = { name = "  Tank  ", main = validMain, off = validShield },
         B = { main = twoHanded, off = validShield },
     },
 })
@@ -42,6 +43,9 @@ local db = ns.Database:Initialize({
 assert(db.frame.point == "CENTER")
 assert(db.frame.x == 5000 and db.frame.y == -5000)
 assert(db.sets.A.main.itemID == 1001)
+assert(db.sets.A.name == "Tank")
+assert(ns.Database:GetSetName("A") == "Tank")
+assert(ns.Database:GetSetName("B") == "Arsenal B")
 assert(db.sets.A.off.itemID == 1002)
 assert(db.sets.B.main.itemID == 1003)
 assert(db.sets.B.off == nil, "two-handed main hand must clear the off hand")
@@ -52,5 +56,10 @@ assert(ns.Database:GetSet("A").off == nil)
 assert(not ns.Database:SetItem("A", "off", validShield), "2H off hand must remain disabled")
 assert(ns.Database:ClearItem("B", "main"))
 assert(not ns.Database:IsReady())
+assert(ns.Database:SetSetName("B", "Damage"))
+assert(ns.Database:GetSetName("B") == "Damage")
+assert(ns.Database:SetSetName("B", "   "))
+assert(ns.Database:GetSetName("B") == "Arsenal B")
+assert(not ns.Database:SetSetName("B", string.rep("x", 49)))
 
 print("test_database.lua: ok")

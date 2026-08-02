@@ -130,13 +130,53 @@ function Options:CreateSetPanel(parent, setKey, title, x)
     panel:SetPoint("TOPLEFT", x, -58)
     setPanelBackdrop(panel, 0.58)
 
-    panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    panel.title:SetPoint("TOP", 0, -12)
+    panel.title = CreateFrame("EditBox", nil, panel, "InputBoxTemplate")
+    panel.title:SetSize(150, 22)
+    panel.title:SetPoint("TOP", 0, -7)
+    panel.title:SetAutoFocus(false)
+    panel.title:SetMaxLetters(24)
+    if GameFontNormal and type(panel.title.SetFontObject) == "function" then
+        panel.title:SetFontObject(GameFontNormal)
+    end
+    panel.title:SetJustifyH("CENTER")
     panel.title:SetText(title)
+    panel.title:SetScript("OnEnterPressed", function(self)
+        Options:SaveSetName(panel)
+        self:ClearFocus()
+    end)
+    panel.title:SetScript("OnEditFocusLost", function()
+        Options:SaveSetName(panel)
+    end)
+    panel.title:SetScript("OnEscapePressed", function(self)
+        self:SetText(ns.Database:GetSetName(setKey))
+        self:ClearFocus()
+    end)
+    panel.title:SetScript("OnEnter", function(self)
+        if GameTooltip then
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetText(L.NAME_TOOLTIP, 1, 0.82, 0)
+            GameTooltip:Show()
+        end
+    end)
+    panel.title:SetScript("OnLeave", function()
+        if GameTooltip then
+            GameTooltip:Hide()
+        end
+    end)
+    panel.setKey = setKey
 
     panel.main = self:CreateItemSlot(panel, setKey, "main", L.MAIN_HAND, 34)
     panel.off = self:CreateItemSlot(panel, setKey, "off", L.OFF_HAND, 113)
     return panel
+end
+
+function Options:SaveSetName(panel)
+    if not panel or not panel.title then
+        return
+    end
+    ns.Database:SetSetName(panel.setKey, panel.title:GetText())
+    panel.title:SetText(ns.Database:GetSetName(panel.setKey))
+    self:RefreshStatus()
 end
 
 function Options:CreateFrame()
@@ -334,11 +374,11 @@ function Options:RefreshStatus()
 
     local active = ns.Swap:GetActiveSet()
     if active == "A" then
-        self:SetMessage(L.ACTIVE_A, false)
+        self:SetMessage(string.format(L.ACTIVE_SET, ns.Database:GetSetName("A")), false)
     elseif active == "B" then
-        self:SetMessage(L.ACTIVE_B, false)
+        self:SetMessage(string.format(L.ACTIVE_SET, ns.Database:GetSetName("B")), false)
     else
-        self:SetMessage(L.ACTIVE_OTHER, false)
+        self:SetMessage(string.format(L.ACTIVE_OTHER, ns.Database:GetSetName("A")), false)
     end
 end
 
@@ -351,6 +391,12 @@ function Options:Refresh()
     self:RefreshItemSlot(self.frame.setA.off)
     self:RefreshItemSlot(self.frame.setB.main)
     self:RefreshItemSlot(self.frame.setB.off)
+    if type(self.frame.setA.title.HasFocus) ~= "function" or not self.frame.setA.title:HasFocus() then
+        self.frame.setA.title:SetText(ns.Database:GetSetName("A"))
+    end
+    if type(self.frame.setB.title.HasFocus) ~= "function" or not self.frame.setB.title:HasFocus() then
+        self.frame.setB.title:SetText(ns.Database:GetSetName("B"))
+    end
     self.frame.hotkey:SetText(formatKey(ns.Swap:GetBindingKey()))
     self:RefreshStatus()
 

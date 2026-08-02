@@ -28,8 +28,12 @@ local function newWidget()
     function widget:SetTexture(value) self.texture = value end
     function widget:SetDesaturated() end
     function widget:SetText(value) self.text = value end
+    function widget:GetText() return self.text end
     function widget:SetTextColor() end
     function widget:SetJustifyH() end
+    function widget:SetAutoFocus() end
+    function widget:SetMaxLetters() end
+    function widget:SetFontObject() end
     function widget:SetOwner() end
     function widget:SetHyperlink() end
     function widget:SetAttribute(key, value) self.attributes[key] = value end
@@ -47,6 +51,8 @@ local function newWidget()
     function widget:StopMovingOrSizing() end
     function widget:LockHighlight() end
     function widget:UnlockHighlight() end
+    function widget:ClearFocus() self.focused = false end
+    function widget:HasFocus() return self.focused == true end
 
     return widget
 end
@@ -115,7 +121,7 @@ loadModule("SlashCommands.lua")
 loadModule("Core.lua")
 
 ns.Core:OnEvent("ADDON_LOADED", "SimpleArsenalSwap")
-assert(SimpleArsenalSwapDB and SimpleArsenalSwapDB.schemaVersion == 1)
+assert(SimpleArsenalSwapDB and SimpleArsenalSwapDB.schemaVersion == 2)
 assert(ns.Swap.button)
 assert(ns.Swap.button:GetAttribute("type") == "macro")
 assert(type(SimpleArsenalSwap_ToggleOutOfCombat) == "function")
@@ -125,6 +131,11 @@ local frame = ns.Options:CreateFrame()
 assert(frame and frame.setA and frame.setB)
 assert(frame.hotkey.text == ns.L.NOT_BOUND)
 assert(frame.status.text == ns.L.CONFIGURE_BOTH)
+
+frame.setA.title:SetText("Tank")
+frame.setA.title.scripts.OnEnterPressed(frame.setA.title)
+assert(ns.Database:GetSetName("A") == "Tank")
+assert(frame.setA.title.text == "Tank")
 
 ns.Options:StartBindingCapture()
 ns.Options:OnBindingKeyDown("K")
