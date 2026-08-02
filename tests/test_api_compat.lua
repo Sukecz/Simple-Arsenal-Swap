@@ -27,6 +27,36 @@ CombatText_StandardScroll = function() end
 CombatText_AddMessage = function(message, scroll, red, green, blue)
     combatMessage = { message, scroll, red, green, blue }
 end
+local largeMessageFrame = {}
+function largeMessageFrame:SetSize(width, height) self.width, self.height = width, height end
+function largeMessageFrame:SetPoint() end
+function largeMessageFrame:SetFrameStrata() end
+function largeMessageFrame:SetJustifyH() end
+function largeMessageFrame:SetFading() end
+function largeMessageFrame:SetFadeDuration() end
+function largeMessageFrame:SetTimeVisible() end
+function largeMessageFrame:SetMaxLines() end
+function largeMessageFrame:SetFont(path, size, flags)
+    self.fontPath, self.fontSize, self.fontFlags = path, size, flags
+end
+function largeMessageFrame:AddMessage(message, red, green, blue)
+    self.message = { message, red, green, blue }
+end
+UIParent = {}
+STANDARD_TEXT_FONT = "Fonts\\FRIZQT__.TTF"
+CreateFrame = function(frameType, name, parent)
+    assert(frameType == "ScrollingMessageFrame")
+    assert(name == "SimpleArsenalSwapSwapMessage")
+    assert(parent == UIParent)
+    return largeMessageFrame
+end
+assert(ns.ApiCompat:ShowCombatMessage("Arsenal A equipped") == "large-overlay")
+assert(largeMessageFrame.fontSize == 32)
+assert(largeMessageFrame.message[1] == "Arsenal A equipped")
+
+ns.ApiCompat.swapMessageFrame = nil
+CreateFrame = nil
+UIParent = nil
 assert(ns.ApiCompat:ShowCombatMessage("Arsenal A equipped") == "combat-text")
 assert(combatMessage[1] == "Arsenal A equipped")
 assert(combatMessage[2] == CombatText_StandardScroll)

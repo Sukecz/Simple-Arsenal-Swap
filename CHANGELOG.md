@@ -22,4 +22,5 @@ All notable changes to Simple Arsenal Swap will be documented here.
 - Custom Simple Arsenal Swap logo as the in-game addon icon.
 - Confirmation dialog before replacing a hotkey already used by another action.
 - On-screen confirmation after the requested arsenal is successfully equipped.
+- Large 32px swap confirmation near the scrolling combat-text area.
 - Optional custom names for Arsenal A and B, also used in status and swap-success messages.

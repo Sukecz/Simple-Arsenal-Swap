@@ -126,6 +126,33 @@ function ApiCompat:ClearCursor()
     end
 end
 
+function ApiCompat:GetSwapMessageFrame()
+    if self.swapMessageFrame then
+        return self.swapMessageFrame
+    end
+    if type(CreateFrame) ~= "function" or not UIParent then
+        return nil
+    end
+
+    local frame = CreateFrame("ScrollingMessageFrame", "SimpleArsenalSwapSwapMessage", UIParent)
+    frame:SetSize(640, 90)
+    frame:SetPoint("CENTER", UIParent, "CENTER", 0, 120)
+    frame:SetFrameStrata("HIGH")
+    frame:SetJustifyH("CENTER")
+    frame:SetFading(true)
+    frame:SetFadeDuration(0.6)
+    frame:SetTimeVisible(1.5)
+    frame:SetMaxLines(1)
+    if type(STANDARD_TEXT_FONT) == "string" and type(frame.SetFont) == "function" then
+        frame:SetFont(STANDARD_TEXT_FONT, 32, "OUTLINE")
+    elseif GameFontNormalHuge and type(frame.SetFontObject) == "function" then
+        frame:SetFontObject(GameFontNormalHuge)
+    end
+
+    self.swapMessageFrame = frame
+    return frame
+end
+
 function ApiCompat:ShowCombatMessage(message, red, green, blue)
     if type(message) ~= "string" or message == "" then
         return nil
@@ -134,6 +161,12 @@ function ApiCompat:ShowCombatMessage(message, red, green, blue)
     red = red or 0.2
     green = green or 1
     blue = blue or 0.2
+
+    local messageFrame = self:GetSwapMessageFrame()
+    if messageFrame and type(messageFrame.AddMessage) == "function" then
+        messageFrame:AddMessage(message, red, green, blue)
+        return "large-overlay"
+    end
 
     if tostring(SHOW_COMBAT_TEXT) ~= "0"
         and type(CombatText_AddMessage) == "function"
