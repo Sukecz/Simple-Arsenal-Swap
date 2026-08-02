@@ -48,13 +48,15 @@ while IFS= read -r toc_file; do
 done <<< "$vanilla_files"
 
 grep -qx '## Interface: 11509' SimpleArsenalSwap.toc
-grep -qx '## Version: 0.1.0-alpha.1' SimpleArsenalSwap.toc
+grep -qx '## Version: 0.1.0' SimpleArsenalSwap.toc
+grep -qx '## X-Curse-Project-ID: 1636432' SimpleArsenalSwap.toc
 grep -qx '## SavedVariablesPerCharacter: SimpleArsenalSwapDB' SimpleArsenalSwap.toc
 grep -qx '## X-Flavor: Vanilla' SimpleArsenalSwap.toc
 grep -qx '## AllowLoadGameType: vanilla' SimpleArsenalSwap.toc
 grep -Fqx '## IconTexture: Interface\AddOns\SimpleArsenalSwap\assets\logo' SimpleArsenalSwap.toc
 grep -qx '## Interface: 20506' SimpleArsenalSwap_TBC.toc
-grep -qx '## Version: 0.1.0-alpha.1' SimpleArsenalSwap_TBC.toc
+grep -qx '## Version: 0.1.0' SimpleArsenalSwap_TBC.toc
+grep -qx '## X-Curse-Project-ID: 1636432' SimpleArsenalSwap_TBC.toc
 grep -qx '## SavedVariablesPerCharacter: SimpleArsenalSwapDB' SimpleArsenalSwap_TBC.toc
 grep -qx '## X-Flavor: TBC' SimpleArsenalSwap_TBC.toc
 grep -qx '## AllowLoadGameType: tbc' SimpleArsenalSwap_TBC.toc
@@ -62,10 +64,5 @@ grep -Fqx '## IconTexture: Interface\AddOns\SimpleArsenalSwap\assets\logo' Simpl
 test -f assets/logo.png
 test -f tools/windows/Deploy-WoW-Addons.cmd
 test -f tools/windows/Deploy-WoW-Addons.ps1
-
-if rg -n 'X-Curse-Project-ID' SimpleArsenalSwap*.toc; then
-    echo "A CurseForge project ID must not be invented before project creation." >&2
-    exit 1
-fi
 
 echo "All Lua 5.1 and TOC checks passed."

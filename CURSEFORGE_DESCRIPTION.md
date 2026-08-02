@@ -6,8 +6,11 @@ Swap between two weapon, shield, or off-hand combinations with one hotkey.
 
 1. Open the window with `/sas`.
 2. Drag items into Arsenal A and Arsenal B.
-3. Choose a hotkey.
-4. Press it to swap, then press it again to swap back.
+3. Optionally rename either arsenal.
+4. Choose a hotkey. If it is already used, confirm before replacing it.
+5. Press it to swap, then press it again to swap back.
+
+A green on-screen message confirms the arsenal that was successfully equipped.
 
 Simple Arsenal Swap supports combinations such as:
 
@@ -23,6 +26,7 @@ stances, rotations, or automatic swaps.
 
 - `/sas` — open settings
 - `/sas status` — show the current state
+- `/sas help` — show command help
 
 Every swap requires a real key press and remains subject to World of Warcraft's
 normal combat, casting, cooldown, item-lock, and bag-space rules.

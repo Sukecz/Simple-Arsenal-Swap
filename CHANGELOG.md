@@ -4,9 +4,11 @@ All notable changes to Simple Arsenal Swap will be documented here.
 
 ## Unreleased
 
+## 0.1.0 - 2026-08-02
+
 ### Added
 
-- Initial `0.1.0-alpha.1` project structure for Classic Era/Hardcore and TBC Classic.
+- Initial stable project structure for Classic Era/Hardcore and TBC Classic.
 - Two configurable main-hand/off-hand arsenals with drag-and-drop item capture.
 - Two-handed weapon handling that clears and disables the matching off hand.
 - One configurable WoW keybinding backed by a hidden secure action button.

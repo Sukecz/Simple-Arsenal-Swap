@@ -9,9 +9,8 @@ between two configured weapon, shield, or off-hand combinations with one hotkey.
 - World of Warcraft Classic Hardcore
 - Burning Crusade Classic Anniversary
 
-The initial alpha targets interface `11509` for Era/Hardcore and `20506` for
-TBC. Live-client verification is still required before these targets are
-claimed as fully compatible.
+Version `0.1.0` targets interface `11509` for Era/Hardcore and `20506` for TBC.
+See `COMPATIBILITY.md` for the remaining live-client test matrix.
 
 ## Usage
 
