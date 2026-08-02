@@ -60,7 +60,43 @@ CreateFrame = function()
     return newWidget()
 end
 GetInventoryItemID = function() return nil end
-GetBindingKey = function() return nil end
+local addonBindingKey
+local bindingActions = { K = "JUMP" }
+GetBindingKey = function(action)
+    if action == "CLICK SimpleArsenalSwapSecureButton:LeftButton" then
+        return addonBindingKey
+    end
+    return nil
+end
+GetBindingAction = function(key)
+    return bindingActions[key] or ""
+end
+GetBindingText = function(value, prefix)
+    if prefix == "BINDING_NAME_" and value == "JUMP" then
+        return "Jump"
+    end
+    return value
+end
+SetBinding = function(key)
+    if key == addonBindingKey then
+        addonBindingKey = nil
+    end
+    bindingActions[key] = nil
+    return true
+end
+SetBindingClick = function(key)
+    addonBindingKey = key
+    bindingActions[key] = "CLICK SimpleArsenalSwapSecureButton:LeftButton"
+    return true
+end
+GetCurrentBindingSet = function() return 1 end
+SaveBindings = function() end
+StaticPopupDialogs = {}
+local shownPopup
+StaticPopup_Show = function(name, textArg1, textArg2)
+    shownPopup = { name = name, textArg1 = textArg1, textArg2 = textArg2 }
+end
+CANCEL = "Cancel"
 InCombatLockdown = function() return false end
 
 local ns = {}
@@ -89,5 +125,21 @@ local frame = ns.Options:CreateFrame()
 assert(frame and frame.setA and frame.setB)
 assert(frame.hotkey.text == ns.L.NOT_BOUND)
 assert(frame.status.text == ns.L.CONFIGURE_BOTH)
+
+ns.Options:StartBindingCapture()
+ns.Options:OnBindingKeyDown("K")
+assert(shownPopup and shownPopup.textArg1 == "K" and shownPopup.textArg2 == "Jump")
+assert(addonBindingKey == nil, "a conflicting binding must not be replaced before confirmation")
+StaticPopupDialogs[shownPopup.name].OnAccept()
+assert(addonBindingKey == "K", "accepting the dialog should replace the binding")
+assert(frame.hotkey.text == "K")
+
+bindingActions.L = "OPENALLBAGS"
+ns.Options:StartBindingCapture()
+ns.Options:OnBindingKeyDown("L")
+assert(addonBindingKey == "K")
+StaticPopupDialogs[shownPopup.name].OnCancel()
+assert(addonBindingKey == "K", "cancelling the dialog must keep the existing addon binding")
+assert(bindingActions.L == "OPENALLBAGS", "cancelling must preserve the conflicting action")
 
 print("test_options_runtime.lua: ok")

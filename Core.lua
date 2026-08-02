@@ -37,8 +37,13 @@ function Core:OnEvent(event, ...)
         if ns.Options.frame and ns.Options.frame:IsShown() then
             ns.Options:Refresh()
         end
-    elseif event == "PLAYER_EQUIPMENT_CHANGED" or event == "BAG_UPDATE_DELAYED"
-        or event == "GET_ITEM_INFO_RECEIVED" then
+    elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+        ns.Swap:OnEquipmentChanged()
+        ns.Swap:RefreshSecureButton()
+        if ns.Options.frame and ns.Options.frame:IsShown() then
+            ns.Options:Refresh()
+        end
+    elseif event == "BAG_UPDATE_DELAYED" or event == "GET_ITEM_INFO_RECEIVED" then
         ns.Swap:RefreshSecureButton()
         if ns.Options.frame and ns.Options.frame:IsShown() then
             ns.Options:Refresh()

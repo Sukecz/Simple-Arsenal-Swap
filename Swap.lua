@@ -97,10 +97,55 @@ function Swap:FindMissingItem(set)
     return nil
 end
 
-function Swap:ToggleOutOfCombat()
-    if ns.ApiCompat:IsCombatLocked() then
-        return false, "combat"
+function Swap:ClearSwapAttempt(attemptID)
+    if attemptID and self.pendingAttemptID ~= attemptID then
+        return
     end
+
+    self.pendingAttemptID = nil
+    self.pendingTargetKey = nil
+    self.pendingStartedAt = nil
+end
+
+function Swap:BeginSwapAttempt(targetKey)
+    self.nextAttemptID = (self.nextAttemptID or 0) + 1
+    local attemptID = self.nextAttemptID
+    self.pendingAttemptID = attemptID
+    self.pendingTargetKey = targetKey
+    self.pendingStartedAt = type(GetTime) == "function" and GetTime() or 0
+
+    if C_Timer and type(C_Timer.After) == "function" then
+        C_Timer.After(3, function()
+            self:ClearSwapAttempt(attemptID)
+        end)
+    end
+
+    return attemptID
+end
+
+function Swap:OnEquipmentChanged()
+    if not self.pendingTargetKey then
+        return false
+    end
+
+    if type(GetTime) == "function" and self.pendingStartedAt
+        and GetTime() - self.pendingStartedAt > 3 then
+        self:ClearSwapAttempt()
+        return false
+    end
+
+    if self:GetActiveSet() ~= self.pendingTargetKey then
+        return false
+    end
+
+    local targetKey = self.pendingTargetKey
+    self:ClearSwapAttempt()
+    local arsenalName = targetKey == "B" and ns.L.ARSENAL_B or ns.L.ARSENAL_A
+    ns.ApiCompat:ShowCombatMessage(string.format(ns.L.SWAP_SUCCESS, arsenalName), 0.2, 1, 0.2)
+    return true
+end
+
+function Swap:ToggleOutOfCombat()
     if not ns.Database:IsReady() then
         ns.Core:Print(ns.L.STATUS_INCOMPLETE)
         return false, "incomplete"
@@ -108,15 +153,27 @@ function Swap:ToggleOutOfCombat()
 
     local targetKey = self:GetTargetSetKey()
     local target = ns.Database:GetSet(targetKey)
+    local attemptID = self:BeginSwapAttempt(targetKey)
+    if ns.ApiCompat:IsCombatLocked() then
+        return false, "combat"
+    end
+
     local missing = self:FindMissingItem(target)
     if missing then
+        self:ClearSwapAttempt(attemptID)
         ns.Core:Print(string.format(ns.L.MISSING_ITEM, missing.itemLink or missing.name))
         return false, "missing"
     end
 
-    ns.ApiCompat:EquipItem(target.main, C.MAIN_HAND_SLOT)
+    if not ns.ApiCompat:EquipItem(target.main, C.MAIN_HAND_SLOT) then
+        self:ClearSwapAttempt(attemptID)
+        return false, "failed"
+    end
     if target.off and not ns.ApiCompat:IsTwoHanded(target.main) then
-        ns.ApiCompat:EquipItem(target.off, C.OFF_HAND_SLOT)
+        if not ns.ApiCompat:EquipItem(target.off, C.OFF_HAND_SLOT) then
+            self:ClearSwapAttempt(attemptID)
+            return false, "failed"
+        end
     end
 
     return true, targetKey

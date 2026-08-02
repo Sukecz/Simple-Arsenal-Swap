@@ -4,6 +4,7 @@ local Options = {}
 ns.Options = Options
 
 local L = ns.L
+local BINDING_CONFIRM_DIALOG = "SIMPLE_ARSENAL_SWAP_CONFIRM_BINDING"
 
 local function createBackdropFrame(frameType, name, parent, template)
     local backdropTemplate = BackdropTemplateMixin and "BackdropTemplate" or nil
@@ -143,6 +144,8 @@ function Options:CreateFrame()
         return self.frame
     end
 
+    self:RegisterBindingConflictDialog()
+
     local frame = createBackdropFrame("Frame", "SimpleArsenalSwapOptions", UIParent)
     frame:SetSize(470, 315)
     frame:SetFrameStrata("DIALOG")
@@ -230,6 +233,34 @@ function Options:CreateFrame()
     self:Refresh()
     frame:Hide()
     return frame
+end
+
+function Options:RegisterBindingConflictDialog()
+    if type(StaticPopupDialogs) ~= "table" or StaticPopupDialogs[BINDING_CONFIRM_DIALOG] then
+        return
+    end
+
+    StaticPopupDialogs[BINDING_CONFIRM_DIALOG] = {
+        text = L.BINDING_REPLACE_CONFIRM,
+        button1 = L.BINDING_REPLACE,
+        button2 = CANCEL or "Cancel",
+        OnAccept = function()
+            local pending = Options.pendingBindingConfirmation
+            Options.pendingBindingConfirmation = nil
+            if pending then
+                Options:ApplyBinding(pending.key)
+            end
+        end,
+        OnCancel = function()
+            Options.pendingBindingConfirmation = nil
+            Options:StopBindingCapture()
+            Options:SetMessage(L.BINDING_NOT_REPLACED, false)
+        end,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3,
+    }
 end
 
 function Options:SetMessage(message, red)
@@ -341,7 +372,6 @@ function Options:StartBindingCapture()
         return
     end
 
-    self.pendingConflict = nil
     self.frame.capture:Show()
     if type(self.frame.capture.SetPropagateKeyboardInput) == "function" then
         self.frame.capture:SetPropagateKeyboardInput(false)
@@ -354,10 +384,19 @@ function Options:StopBindingCapture()
     if not self.frame or not self.frame.capture then
         return
     end
-    self.pendingConflict = nil
     self.frame.capture:Hide()
     self.frame.hotkey:UnlockHighlight()
     self.frame.hotkey:SetText(formatKey(ns.Swap:GetBindingKey()))
+end
+
+function Options:ApplyBinding(bindingKey)
+    local ok = ns.Swap:SetBinding(bindingKey)
+    self:StopBindingCapture()
+    if ok then
+        self:SetMessage(string.format(L.BINDING_SAVED, formatKey(bindingKey)), false)
+    else
+        self:SetMessage(L.BINDING_FAILED, true)
+    end
 end
 
 function Options:OnBindingKeyDown(key)
@@ -377,21 +416,24 @@ function Options:OnBindingKeyDown(key)
     end
 
     local existingAction = type(GetBindingAction) == "function" and GetBindingAction(bindingKey) or ""
-    if existingAction ~= "" and existingAction ~= ns.Constants.BINDING_ACTION
-        and self.pendingConflict ~= bindingKey then
-        self.pendingConflict = bindingKey
+    if existingAction ~= "" and existingAction ~= ns.Constants.BINDING_ACTION then
         local actionLabel = ns.ApiCompat:GetBindingLabel(existingAction)
-        self:SetMessage(string.format(L.BINDING_USED, formatKey(bindingKey), actionLabel), true)
+        self:StopBindingCapture()
+        self.pendingBindingConfirmation = {
+            key = bindingKey,
+            actionLabel = actionLabel,
+        }
+        if type(StaticPopup_Show) == "function" and type(StaticPopupDialogs) == "table"
+            and StaticPopupDialogs[BINDING_CONFIRM_DIALOG] then
+            StaticPopup_Show(BINDING_CONFIRM_DIALOG, formatKey(bindingKey), actionLabel)
+        else
+            self.pendingBindingConfirmation = nil
+            self:SetMessage(string.format(L.BINDING_USED, formatKey(bindingKey), actionLabel), true)
+        end
         return
     end
 
-    local ok = ns.Swap:SetBinding(bindingKey)
-    self:StopBindingCapture()
-    if ok then
-        self:SetMessage(string.format(L.BINDING_SAVED, formatKey(bindingKey)), false)
-    else
-        self:SetMessage(L.BINDING_FAILED, true)
-    end
+    self:ApplyBinding(bindingKey)
 end
 
 function Options:ClearBinding()

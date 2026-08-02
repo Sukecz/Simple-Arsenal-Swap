@@ -125,3 +125,27 @@ function ApiCompat:ClearCursor()
         ClearCursor()
     end
 end
+
+function ApiCompat:ShowCombatMessage(message, red, green, blue)
+    if type(message) ~= "string" or message == "" then
+        return nil
+    end
+
+    red = red or 0.2
+    green = green or 1
+    blue = blue or 0.2
+
+    if tostring(SHOW_COMBAT_TEXT) ~= "0"
+        and type(CombatText_AddMessage) == "function"
+        and type(CombatText_StandardScroll) == "function" then
+        CombatText_AddMessage(message, CombatText_StandardScroll, red, green, blue)
+        return "combat-text"
+    end
+
+    if UIErrorsFrame and type(UIErrorsFrame.AddMessage) == "function" then
+        UIErrorsFrame:AddMessage(message, red, green, blue, 1)
+        return "ui-errors"
+    end
+
+    return nil
+end

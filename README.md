@@ -22,7 +22,11 @@ claimed as fully compatible.
 5. Press the hotkey to alternate between the two arsenals.
 
 Right-click a configured item slot to clear it. A two-handed weapon automatically
-clears and disables the matching off-hand slot.
+clears and disables the matching off-hand slot. If the selected hotkey already
+belongs to another action, the addon asks for confirmation before replacing it.
+After the equipped items match the target arsenal, a green success message is
+shown in Blizzard's scrolling combat-text area (or in the UI error-message area
+when scrolling combat text is disabled or unavailable).
 
 ## Intended combinations
 

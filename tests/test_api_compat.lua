@@ -21,4 +21,24 @@ assert(not ns.ApiCompat:IsOffHandType("INVTYPE_2HWEAPON"))
 assert(ns.ApiCompat:IsTwoHanded({ equipLoc = "INVTYPE_2HWEAPON" }))
 assert(not ns.ApiCompat:IsTwoHanded({ equipLoc = "INVTYPE_WEAPON" }))
 
+local combatMessage
+SHOW_COMBAT_TEXT = "1"
+CombatText_StandardScroll = function() end
+CombatText_AddMessage = function(message, scroll, red, green, blue)
+    combatMessage = { message, scroll, red, green, blue }
+end
+assert(ns.ApiCompat:ShowCombatMessage("Arsenal A equipped") == "combat-text")
+assert(combatMessage[1] == "Arsenal A equipped")
+assert(combatMessage[2] == CombatText_StandardScroll)
+
+local fallbackMessage
+SHOW_COMBAT_TEXT = "0"
+UIErrorsFrame = {
+    AddMessage = function(_, message, red, green, blue)
+        fallbackMessage = { message, red, green, blue }
+    end,
+}
+assert(ns.ApiCompat:ShowCombatMessage("Arsenal B equipped") == "ui-errors")
+assert(fallbackMessage[1] == "Arsenal B equipped")
+
 print("test_api_compat.lua: ok")

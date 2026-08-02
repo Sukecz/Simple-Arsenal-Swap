@@ -18,3 +18,5 @@ All notable changes to Simple Arsenal Swap will be documented here.
   Better Loot Rolls, and Simple Arsenal Swap in one run.
 - Close the Windows deployment window automatically on success and keep it open on failure.
 - Custom Simple Arsenal Swap logo as the in-game addon icon.
+- Confirmation dialog before replacing a hotkey already used by another action.
+- On-screen confirmation after the requested arsenal is successfully equipped.
