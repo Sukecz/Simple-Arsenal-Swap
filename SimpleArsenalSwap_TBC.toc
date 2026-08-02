@@ -1,0 +1,18 @@
+## Interface: 20506
+## Title: Simple Arsenal Swap
+## Notes: Swap between two weapon, shield, or off-hand combinations with one hotkey.
+## Author: Simple Arsenal Swap Authors
+## Version: 0.1.0-alpha.1
+## SavedVariablesPerCharacter: SimpleArsenalSwapDB
+## X-Flavor: TBC
+## AllowLoadGameType: tbc
+## IconTexture: Interface\Icons\INV_Shield_06
+
+Locales\enUS.lua
+Defaults.lua
+ApiCompat.lua
+Database.lua
+Swap.lua
+Options.lua
+SlashCommands.lua
+Core.lua
