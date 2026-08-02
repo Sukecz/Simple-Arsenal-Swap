@@ -62,6 +62,8 @@ grep -qx '## X-Flavor: TBC' SimpleArsenalSwap_TBC.toc
 grep -qx '## AllowLoadGameType: tbc' SimpleArsenalSwap_TBC.toc
 grep -Fqx '## IconTexture: Interface\AddOns\SimpleArsenalSwap\assets\logo' SimpleArsenalSwap_TBC.toc
 test -f assets/logo.png
+test -f assets/screenshot.png
+grep -qx '  - assets/screenshot.png' .pkgmeta
 test -f tools/windows/Deploy-WoW-Addons.cmd
 test -f tools/windows/Deploy-WoW-Addons.ps1
 

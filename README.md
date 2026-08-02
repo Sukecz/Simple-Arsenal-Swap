@@ -3,6 +3,8 @@
 Simple Arsenal Swap is a small World of Warcraft Classic addon that alternates
 between two configured weapon, shield, or off-hand combinations with one hotkey.
 
+![Simple Arsenal Swap configuration](assets/screenshot.png)
+
 ## Supported clients
 
 - World of Warcraft Classic Era
