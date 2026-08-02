@@ -14,3 +14,6 @@ All notable changes to Simple Arsenal Swap will be documented here.
 - Compact movable settings window and `/sas` commands.
 - Lua 5.1, database, macro-generation, and TOC validation tests.
 - Double-click Windows deployment tool using the existing `ssh minipc` workflow.
+- Shared Windows deployment launcher that validates and updates Simple Scrolling Loot,
+  Better Loot Rolls, and Simple Arsenal Swap in one run.
+- Custom Simple Arsenal Swap logo as the in-game addon icon.
