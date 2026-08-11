@@ -4,6 +4,12 @@ All notable changes to Simple Arsenal Swap will be documented here.
 
 ## Unreleased
 
+## 0.1.1 - 2026-08-11
+
+### Fixed
+
+- Use a dedicated 256px TGA icon in the in-game AddOns list.
+
 ## 0.1.0 - 2026-08-02
 
 ### Added

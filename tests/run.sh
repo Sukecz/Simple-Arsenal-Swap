@@ -48,20 +48,21 @@ while IFS= read -r toc_file; do
 done <<< "$vanilla_files"
 
 grep -qx '## Interface: 11509' SimpleArsenalSwap.toc
-grep -qx '## Version: 0.1.0' SimpleArsenalSwap.toc
+grep -qx '## Version: 0.1.1' SimpleArsenalSwap.toc
 grep -qx '## X-Curse-Project-ID: 1636432' SimpleArsenalSwap.toc
 grep -qx '## SavedVariablesPerCharacter: SimpleArsenalSwapDB' SimpleArsenalSwap.toc
 grep -qx '## X-Flavor: Vanilla' SimpleArsenalSwap.toc
 grep -qx '## AllowLoadGameType: vanilla' SimpleArsenalSwap.toc
-grep -Fqx '## IconTexture: Interface\AddOns\SimpleArsenalSwap\assets\logo' SimpleArsenalSwap.toc
+grep -Fqx '## IconTexture: Interface\AddOns\SimpleArsenalSwap\assets\addon-icon.tga' SimpleArsenalSwap.toc
 grep -qx '## Interface: 20506' SimpleArsenalSwap_TBC.toc
-grep -qx '## Version: 0.1.0' SimpleArsenalSwap_TBC.toc
+grep -qx '## Version: 0.1.1' SimpleArsenalSwap_TBC.toc
 grep -qx '## X-Curse-Project-ID: 1636432' SimpleArsenalSwap_TBC.toc
 grep -qx '## SavedVariablesPerCharacter: SimpleArsenalSwapDB' SimpleArsenalSwap_TBC.toc
 grep -qx '## X-Flavor: TBC' SimpleArsenalSwap_TBC.toc
 grep -qx '## AllowLoadGameType: tbc' SimpleArsenalSwap_TBC.toc
-grep -Fqx '## IconTexture: Interface\AddOns\SimpleArsenalSwap\assets\logo' SimpleArsenalSwap_TBC.toc
+grep -Fqx '## IconTexture: Interface\AddOns\SimpleArsenalSwap\assets\addon-icon.tga' SimpleArsenalSwap_TBC.toc
 test -f assets/logo.png
+file assets/addon-icon.tga | grep -Fq '256 x 256 x 32'
 test -f assets/screenshot.png
 grep -qx '  - assets/screenshot.png' .pkgmeta
 test -f tools/windows/Deploy-WoW-Addons.cmd
