@@ -65,6 +65,17 @@ local function buildBindingKey(key)
     return table.concat(parts, "-")
 end
 
+local function normalizeMouseButton(button)
+    if button == "LeftButton" or button == "RightButton" then
+        return nil
+    elseif button == "MiddleButton" then
+        return "BUTTON3"
+    end
+
+    local number = type(button) == "string" and button:match("^Button(%d+)$")
+    return number and ("BUTTON" .. number) or nil
+end
+
 function Options:CreateItemSlot(parent, setKey, slotKey, labelText, x)
     local button = createBackdropFrame("Button", nil, parent)
     button:SetSize(58, 58)
@@ -257,16 +268,29 @@ function Options:CreateFrame()
         frame:Hide()
     end)
 
-    frame.capture = CreateFrame("Frame", nil, frame)
-    frame.capture:SetAllPoints(frame)
-    frame.capture:SetFrameLevel(frame:GetFrameLevel() + 20)
+    frame.capture = CreateFrame("Frame", nil, UIParent)
+    frame.capture:SetAllPoints(UIParent)
+    frame.capture:SetFrameStrata("TOOLTIP")
+    frame.capture:EnableMouse(true)
     frame.capture:EnableKeyboard(true)
+    if type(frame.capture.EnableMouseWheel) == "function" then
+        frame.capture:EnableMouseWheel(true)
+    end
     if type(frame.capture.SetPropagateKeyboardInput) == "function" then
         frame.capture:SetPropagateKeyboardInput(false)
     end
     frame.capture:Hide()
     frame.capture:SetScript("OnKeyDown", function(_, key)
         Options:OnBindingKeyDown(key)
+    end)
+    frame.capture:SetScript("OnMouseDown", function(_, button)
+        local key = normalizeMouseButton(button)
+        if key then
+            Options:OnBindingKeyDown(key)
+        end
+    end)
+    frame.capture:SetScript("OnMouseWheel", function(_, delta)
+        Options:OnBindingKeyDown(delta > 0 and "MOUSEWHEELUP" or "MOUSEWHEELDOWN")
     end)
 
     self.frame = frame

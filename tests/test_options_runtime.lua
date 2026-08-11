@@ -9,13 +9,14 @@ local function newWidget()
     function widget:SetWidth() end
     function widget:SetHeight() end
     function widget:SetPoint() end
-    function widget:SetAllPoints() end
+    function widget:SetAllPoints(target) self.allPointsTarget = target end
     function widget:SetFrameStrata() end
     function widget:SetFrameLevel() end
     function widget:GetFrameLevel() return 1 end
     function widget:SetClampedToScreen() end
     function widget:SetMovable() end
     function widget:EnableMouse() end
+    function widget:EnableMouseWheel() end
     function widget:EnableKeyboard() end
     function widget:SetPropagateKeyboardInput() end
     function widget:RegisterForDrag() end
@@ -62,8 +63,10 @@ BackdropTemplateMixin = {}
 GameTooltip = newWidget()
 DEFAULT_CHAT_FRAME = { AddMessage = function() end }
 SlashCmdList = {}
-CreateFrame = function()
-    return newWidget()
+CreateFrame = function(_, _, parent)
+    local widget = newWidget()
+    widget.parent = parent
+    return widget
 end
 GetInventoryItemID = function() return nil end
 local addonBindingKey
@@ -104,6 +107,10 @@ StaticPopup_Show = function(name, textArg1, textArg2)
 end
 CANCEL = "Cancel"
 InCombatLockdown = function() return false end
+local controlDown = false
+IsControlKeyDown = function() return controlDown end
+IsAltKeyDown = function() return false end
+IsShiftKeyDown = function() return false end
 
 local ns = {}
 local function loadModule(path)
@@ -129,6 +136,8 @@ assert(type(SlashCmdList.SIMPLEARSENALSWAP) == "function")
 
 local frame = ns.Options:CreateFrame()
 assert(frame and frame.setA and frame.setB)
+assert(frame.capture.parent == UIParent, "hotkey capture should cover the full UI")
+assert(frame.capture.allPointsTarget == UIParent, "mouse capture should work outside the options window")
 assert(frame.hotkey.text == ns.L.NOT_BOUND)
 assert(frame.status.text == ns.L.CONFIGURE_BOTH)
 
@@ -152,5 +161,20 @@ assert(addonBindingKey == "K")
 StaticPopupDialogs[shownPopup.name].OnCancel()
 assert(addonBindingKey == "K", "cancelling the dialog must keep the existing addon binding")
 assert(bindingActions.L == "OPENALLBAGS", "cancelling must preserve the conflicting action")
+
+controlDown = true
+ns.Options:StartBindingCapture()
+frame.capture.scripts.OnMouseDown(frame.capture, "LeftButton")
+frame.capture.scripts.OnMouseDown(frame.capture, "RightButton")
+assert(addonBindingKey == "K", "left and right mouse buttons must not be bindable")
+assert(frame.capture:IsShown(), "ignored primary mouse clicks should keep capture active")
+frame.capture.scripts.OnMouseDown(frame.capture, "Button4")
+controlDown = false
+assert(addonBindingKey == "CTRL-BUTTON4", "modifier and mouse button should be bindable together")
+assert(frame.hotkey.text == "CTRL-BUTTON4")
+
+ns.Options:StartBindingCapture()
+frame.capture.scripts.OnMouseWheel(frame.capture, -1)
+assert(addonBindingKey == "MOUSEWHEELDOWN", "mouse wheel should be bindable")
 
 print("test_options_runtime.lua: ok")

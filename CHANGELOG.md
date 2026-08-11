@@ -4,6 +4,14 @@ All notable changes to Simple Arsenal Swap will be documented here.
 
 ## Unreleased
 
+## 0.1.2 - 2026-08-11
+
+### Added
+
+- Allow middle and extra mouse buttons, the mouse wheel, and keyboard-modified
+  mouse clicks anywhere on the screen as the swap hotkey while excluding primary
+  left and right clicks.
+
 ## 0.1.1 - 2026-08-11
 
 ### Fixed

@@ -2,7 +2,7 @@
 ## Title: Simple Arsenal Swap
 ## Notes: Swap between two weapon, shield, or off-hand combinations with one hotkey.
 ## Author: Simple Arsenal Swap Authors
-## Version: 0.1.1
+## Version: 0.1.2
 ## X-Curse-Project-ID: 1636432
 ## SavedVariablesPerCharacter: SimpleArsenalSwapDB
 ## X-Flavor: TBC

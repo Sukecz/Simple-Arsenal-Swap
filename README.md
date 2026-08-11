@@ -11,7 +11,7 @@ between two configured weapon, shield, or off-hand combinations with one hotkey.
 - World of Warcraft Classic Hardcore
 - Burning Crusade Classic Anniversary
 
-Version `0.1.0` targets interface `11509` for Era/Hardcore and `20506` for TBC.
+Version `0.1.2` targets interface `11509` for Era/Hardcore and `20506` for TBC.
 See `COMPATIBILITY.md` for the remaining live-client test matrix.
 
 ## Usage
@@ -19,7 +19,9 @@ See `COMPATIBILITY.md` for the remaining live-client test matrix.
 1. Type `/sas`.
 2. Drag a main-hand weapon into both Arsenal A and Arsenal B.
 3. Optionally drag a shield, off-hand weapon, or held item into either off-hand slot.
-4. Click the Hotkey button and press the key or key combination to bind.
+4. Click the Hotkey button and press a keyboard key, middle or extra mouse button,
+   mouse wheel, or modifier combination to bind. Primary left and right mouse
+   buttons are intentionally excluded.
 5. Press the hotkey to alternate between the two arsenals.
 
 Right-click a configured item slot to clear it. A two-handed weapon automatically
