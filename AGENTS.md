@@ -38,6 +38,17 @@ equipment manager, action-bar manager, stance manager, or automatic gear system.
 - Do not push, tag, publish, or create a release unless explicitly requested.
 - Do not add a CurseForge project ID until the real project exists.
 - Generated packages must contain one top-level `SimpleArsenalSwap` directory.
+- Shared deployment is maintained only in
+  `/home/msminipc/projects/wow-addon-deployer`; do not restore a private
+  `tools/windows` copy in this repository. After completing any code, data, or
+  UI change and after this project's tests pass, automatically run
+  `/home/msminipc/bin/deploy-wow-addons-pc`. The central registry synchronizes
+  each registered addon only to its installed supported clients. Skip
+  deployment for read-only analysis, failed tests, or when the user explicitly
+  says not to deploy. If the PC is unavailable, keep the local changes and
+  report the deployment failure. This narrow permission does not authorize a
+  commit, push, tag, CurseForge upload, or any other publication, and the deploy
+  must preserve SavedVariables.
 
 ## Style
 
