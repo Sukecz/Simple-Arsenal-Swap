@@ -73,15 +73,8 @@ No external Lua libraries are required.
 
 ## Windows deployment
 
-Keep these two files together on Windows and double-click the `.cmd` launcher:
-
-- `tools/windows/Deploy-WoW-Addons.cmd`
-- `tools/windows/Deploy-WoW-Addons.ps1`
-
-The launcher uses the existing `ssh minipc` connection. It first runs the test
-suite for Simple Scrolling Loot, Better Loot Rolls, and Simple Arsenal Swap on
-MINIPC. If all tests pass, it stages and validates all three addons before
-synchronizing their current runtime files into the Classic Era AddOns folder.
-Unchanged files are left alone by Robocopy, and WoW SavedVariables are outside
-the synchronized addon folders. The window closes automatically after a
-successful run and stays open on an error so the failure message can be read.
+The shared deployment tool is maintained in the separate local
+`/home/msminipc/projects/wow-addon-deployer` repository. Run it through
+`/home/msminipc/bin/deploy-wow-addons-pc` on MINIPC. It tests and validates the
+registered addons before synchronizing their runtime files and does not touch
+WoW SavedVariables.
