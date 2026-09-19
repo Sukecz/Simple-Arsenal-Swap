@@ -94,4 +94,62 @@ inventory[16], inventory[17] = 2001, nil
 assert(ns.Swap:OnEquipmentChanged())
 assert(shownMessage == "Damage equipped")
 
+ns.Database.sets.B = {
+    main = ns.Database.sets.A.main,
+    off = ns.Database.sets.A.off,
+}
+ns.Database.sets.A.off = nil
+inventory[16], inventory[17] = 1001, 1002
+assert(ns.Swap:GetActiveSet() == "B", "explicit off-hand match must take precedence")
+assert(ns.Swap:GetTargetSetKey() == "A")
+
+local inCombat = false
+ns.ApiCompat.IsCombatLocked = function() return inCombat end
+local attributes = {}
+ns.Swap.button = {
+    SetAttribute = function(_, key, value)
+        assert(not inCombat, "secure attributes must never be changed in combat")
+        attributes[key] = value
+    end,
+}
+ns.Swap:RefreshSecureButton()
+local beforeCombat = attributes.macrotext
+inCombat = true
+ns.Database.sets.B.main = { itemID = 4001, equipLoc = "INVTYPE_2HWEAPON" }
+ns.Swap:RefreshSecureButton()
+assert(ns.Swap.refreshPending and attributes.macrotext == beforeCombat)
+assert(not ns.Swap:SetBinding("K"))
+assert(not ns.Swap:ClearBinding())
+inCombat = false
+ns.Swap:OnCombatEnded()
+assert(not ns.Swap.refreshPending and attributes.macrotext ~= beforeCombat)
+
+local action = ns.Constants.BINDING_ACTION
+local bindings = { K = action, L = action, M = "JUMP" }
+local saves = 0
+local failNew = true
+local failClear = false
+ns.ApiCompat.GetBindingKey = function() return "K", "L" end
+GetBindingAction = function(key) return bindings[key] or "" end
+SetBindingClick = function(key)
+    if key == "M" and failNew then return false end
+    bindings[key] = action
+    return true
+end
+SetBinding = function(key, value)
+    if key == "L" and failClear then return false end
+    bindings[key] = value
+    return true
+end
+GetCurrentBindingSet = function() return 2 end
+SaveBindings = function(set) assert(set == 2); saves = saves + 1 end
+assert(not ns.Swap:SetBinding("M"))
+assert(bindings.K == action and bindings.L == action and bindings.M == "JUMP" and saves == 0)
+failNew, failClear = false, true
+assert(not ns.Swap:SetBinding("M"))
+assert(bindings.K == action and bindings.L == action and bindings.M == "JUMP" and saves == 0)
+failClear = false
+assert(ns.Swap:SetBinding("M"))
+assert(bindings.K == nil and bindings.L == nil and bindings.M == action and saves == 1)
+
 print("test_swap.lua: ok")

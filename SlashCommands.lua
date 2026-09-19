@@ -18,7 +18,9 @@ function SlashCommands:Handle(message)
                 ns.Core:Print(ns.L.STATUS_UNBOUND)
             else
                 local active = ns.Swap:GetActiveSet()
-                ns.Core:Print(active == "A" and ns.L.ACTIVE_A or active == "B" and ns.L.ACTIVE_B or ns.L.ACTIVE_OTHER)
+                ns.Core:Print(active
+                    and string.format(ns.L.ACTIVE_SET, ns.Database:GetSetName(active))
+                    or string.format(ns.L.ACTIVE_OTHER, ns.Database:GetSetName("A")))
             end
         end
     else

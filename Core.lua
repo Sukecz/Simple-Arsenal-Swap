@@ -32,6 +32,8 @@ function Core:OnEvent(event, ...)
     elseif event == "PLAYER_LOGIN" then
         ns.Swap:RefreshSecureButton()
         self:Print(ns.L.READY_LOGIN)
+    elseif event == "PLAYER_REGEN_DISABLED" then
+        ns.Options:CancelBindingCaptureForCombat()
     elseif event == "PLAYER_REGEN_ENABLED" then
         ns.Swap:OnCombatEnded()
         if ns.Options.frame and ns.Options.frame:IsShown() then
@@ -58,6 +60,7 @@ end
 Core.frame = CreateFrame("Frame")
 Core.frame:RegisterEvent("ADDON_LOADED")
 Core.frame:RegisterEvent("PLAYER_LOGIN")
+Core.frame:RegisterEvent("PLAYER_REGEN_DISABLED")
 Core.frame:RegisterEvent("PLAYER_REGEN_ENABLED")
 Core.frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 Core.frame:RegisterEvent("BAG_UPDATE_DELAYED")

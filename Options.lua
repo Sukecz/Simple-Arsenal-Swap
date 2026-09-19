@@ -442,12 +442,27 @@ function Options:StartBindingCapture()
         return
     end
 
+    self.frame.setA.title:ClearFocus()
+    self.frame.setB.title:ClearFocus()
     self.frame.capture:Show()
     if type(self.frame.capture.SetPropagateKeyboardInput) == "function" then
         self.frame.capture:SetPropagateKeyboardInput(false)
     end
     self.frame.hotkey:SetText(L.PRESS_A_KEY)
     self.frame.hotkey:LockHighlight()
+end
+
+function Options:CancelBindingCaptureForCombat()
+    local capturing = self.frame and self.frame.capture:IsShown()
+    local confirming = self.pendingBindingConfirmation ~= nil
+    self.pendingBindingConfirmation = nil
+    self:StopBindingCapture()
+    if confirming and type(StaticPopup_Hide) == "function" then
+        StaticPopup_Hide(BINDING_CONFIRM_DIALOG)
+    end
+    if capturing or confirming then
+        self:SetMessage(L.COMBAT_LOCKED, true)
+    end
 end
 
 function Options:StopBindingCapture()
@@ -470,6 +485,10 @@ function Options:ApplyBinding(bindingKey)
 end
 
 function Options:OnBindingKeyDown(key)
+    if ns.ApiCompat:IsCombatLocked() then
+        self:CancelBindingCaptureForCombat()
+        return
+    end
     if key == "ESCAPE" then
         self:StopBindingCapture()
         self:SetMessage(L.CAPTURE_CANCELLED, false)

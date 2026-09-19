@@ -2,6 +2,9 @@
 
 Swap between two weapon, shield, or off-hand combinations with one hotkey.
 
+Supports Classic Era, Hardcore, TBC Classic Anniversary, and World of Warcraft:
+Forever (1.60.1). Forever live testing was confirmed by the maintainer.
+
 ## Simple setup
 
 1. Open the window with `/sas`.

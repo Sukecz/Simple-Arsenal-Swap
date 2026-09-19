@@ -61,10 +61,18 @@ function Swap:GetActiveSet()
     local mainItemID = ns.ApiCompat:GetInventoryItemID(C.MAIN_HAND_SLOT)
     local offItemID = ns.ApiCompat:GetInventoryItemID(C.OFF_HAND_SLOT)
 
-    if self:IsSetEquipped(ns.Database:GetSet("A"), mainItemID, offItemID) then
+    local setA = ns.Database:GetSet("A")
+    local setB = ns.Database:GetSet("B")
+    local matchesA = self:IsSetEquipped(setA, mainItemID, offItemID)
+    local matchesB = self:IsSetEquipped(setB, mainItemID, offItemID)
+    -- Prefer the explicitly configured off hand over a main-hand-only match.
+    if matchesA and matchesB and not setA.off and setB.off then
+        return "B"
+    end
+    if matchesA then
         return "A"
     end
-    if self:IsSetEquipped(ns.Database:GetSet("B"), mainItemID, offItemID) then
+    if matchesB then
         return "B"
     end
 
@@ -186,9 +194,7 @@ function Swap:CreateSecureButton()
 
     self.button = CreateFrame("Button", C.SECURE_BUTTON_NAME, nil, "SecureActionButtonTemplate")
     self.button:RegisterForClicks("LeftButtonDown", "LeftButtonUp")
-    if type(GetCVarBool) == "function" then
-        self.button:SetAttribute("useOnKeyDown", GetCVarBool("ActionButtonUseKeyDown"))
-    end
+    -- With no override, the secure template follows ActionButtonUseKeyDown live.
     self:RefreshSecureButton()
     return self.button
 end
@@ -259,13 +265,21 @@ function Swap:SetBinding(key)
         return false, "invalid"
     end
 
-    local cleared, clearReason = self:ClearBinding()
-    if not cleared then
-        return false, clearReason
-    end
+    local oldKeys = { ns.ApiCompat:GetBindingKey(C.BINDING_ACTION) }
+    local previousAction = type(GetBindingAction) == "function" and GetBindingAction(key) or ""
     local ok = SetBindingClick(key, C.SECURE_BUTTON_NAME, "LeftButton")
     if ok == false then
         return false, "failed"
+    end
+    for _, oldKey in ipairs(oldKeys) do
+        if oldKey ~= key and SetBinding(oldKey) == false then
+            -- Restore the session bindings before reporting failure; save only on success.
+            SetBinding(key, previousAction ~= "" and previousAction or nil)
+            for _, restoreKey in ipairs(oldKeys) do
+                SetBindingClick(restoreKey, C.SECURE_BUTTON_NAME, "LeftButton")
+            end
+            return false, "failed"
+        end
     end
     if type(SaveBindings) == "function" then
         SaveBindings(GetCurrentBindingSet())

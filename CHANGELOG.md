@@ -4,6 +4,28 @@ All notable changes to Simple Arsenal Swap will be documented here.
 
 ## Unreleased
 
+## 0.2.0 - 2026-09-19
+
+### Added
+
+- Support Forever beta 1.60.1 (69913) support with a Camelot TOC (interface 16001)
+  and namespaced `C_Item` APIs with legacy fallbacks. Live testing was confirmed
+  by the maintainer on 2026-09-19.
+- Regression coverage for modern and legacy APIs, item-cache misses, combat
+  lockdown, overlapping arsenals, hotkey failures, capture, and status messages.
+
+### Fixed
+
+- Keep cursor item capture from writing to the global underscore variable.
+- Display correctly formatted custom arsenal names in `/sas status`.
+- Release hotkey capture and pending replacement confirmation when combat starts,
+  and release arsenal-name keyboard focus before capturing a hotkey.
+- Prefer an explicit off-hand match over an overlapping main-hand-only arsenal.
+- Follow the game's current key-down/key-up setting through the secure template.
+- Preserve existing bindings when assigning a new hotkey fails and restore session
+  bindings if removing an old hotkey fails; save only a successful replacement.
+- Guard the direct equipment API against combat lockdown as well as its caller.
+
 ## 0.1.2 - 2026-08-11
 
 ### Added

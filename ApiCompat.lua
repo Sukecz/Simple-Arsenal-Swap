@@ -3,6 +3,13 @@ local addonName, ns = ...
 local ApiCompat = {}
 ns.ApiCompat = ApiCompat
 
+local function itemAPI(name)
+    if type(C_Item) == "table" and type(C_Item[name]) == "function" then
+        return C_Item[name]
+    end
+    return type(_G[name]) == "function" and _G[name] or nil
+end
+
 local MAIN_HAND_TYPES = {
     INVTYPE_WEAPON = true,
     INVTYPE_WEAPONMAINHAND = true,
@@ -57,11 +64,14 @@ function ApiCompat:GetCursorItem()
     end
 
     local name, canonicalLink, equipLoc, icon
-    if type(GetItemInfo) == "function" then
+    local GetItemInfo = itemAPI("GetItemInfo")
+    local GetItemInfoInstant = itemAPI("GetItemInfoInstant")
+    if GetItemInfo then
+        local _
         name, canonicalLink, _, _, _, _, _, _, equipLoc, icon = GetItemInfo(itemLink or itemID)
     end
 
-    if type(GetItemInfoInstant) == "function" then
+    if GetItemInfoInstant then
         local _, _, _, instantEquipLoc, instantIcon = GetItemInfoInstant(itemLink or itemID)
         equipLoc = equipLoc or instantEquipLoc
         icon = icon or instantIcon
@@ -81,7 +91,8 @@ function ApiCompat:GetCursorItem()
 end
 
 function ApiCompat:GetItemCount(item)
-    if type(item) ~= "table" or not item.itemID or type(GetItemCount) ~= "function" then
+    local GetItemCount = itemAPI("GetItemCount")
+    if type(item) ~= "table" or not item.itemID or not GetItemCount then
         return 0
     end
 
@@ -89,7 +100,8 @@ function ApiCompat:GetItemCount(item)
 end
 
 function ApiCompat:EquipItem(item, slotID)
-    if type(item) ~= "table" or not item.itemID or type(EquipItemByName) ~= "function" then
+    local EquipItemByName = itemAPI("EquipItemByName")
+    if self:IsCombatLocked() or type(item) ~= "table" or not item.itemID or not EquipItemByName then
         return false
     end
 

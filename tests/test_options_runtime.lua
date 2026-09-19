@@ -106,7 +106,8 @@ StaticPopup_Show = function(name, textArg1, textArg2)
     shownPopup = { name = name, textArg1 = textArg1, textArg2 = textArg2 }
 end
 CANCEL = "Cancel"
-InCombatLockdown = function() return false end
+local inCombat = false
+InCombatLockdown = function() return inCombat end
 local controlDown = false
 IsControlKeyDown = function() return controlDown end
 IsAltKeyDown = function() return false end
@@ -176,5 +177,40 @@ assert(frame.hotkey.text == "CTRL-BUTTON4")
 ns.Options:StartBindingCapture()
 frame.capture.scripts.OnMouseWheel(frame.capture, -1)
 assert(addonBindingKey == "MOUSEWHEELDOWN", "mouse wheel should be bindable")
+
+frame.setA.title.focused = true
+ns.Options:StartBindingCapture()
+assert(not frame.setA.title:HasFocus(), "binding capture should release the name editor")
+inCombat = true
+ns.Core:OnEvent("PLAYER_REGEN_DISABLED")
+assert(not frame.capture:IsShown(), "combat must release the full-screen input capture")
+assert(frame.status.text == ns.L.COMBAT_LOCKED)
+assert(addonBindingKey == "MOUSEWHEELDOWN")
+inCombat = false
+ns.Options:StartBindingCapture()
+ns.Options:OnBindingKeyDown("L")
+assert(ns.Options.pendingBindingConfirmation)
+inCombat = true
+ns.Core:OnEvent("PLAYER_REGEN_DISABLED")
+assert(ns.Options.pendingBindingConfirmation == nil)
+StaticPopupDialogs[shownPopup.name].OnAccept()
+assert(addonBindingKey == "MOUSEWHEELDOWN", "a stale confirmation must not replace bindings")
+inCombat = false
+
+local mainA = { itemID = 1001, equipLoc = "INVTYPE_WEAPON" }
+local mainB = { itemID = 2001, equipLoc = "INVTYPE_2HWEAPON" }
+ns.Database:SetItem("A", "main", mainA)
+ns.Database:SetItem("B", "main", mainB)
+local printed
+ns.Core.Print = function(_, message) printed = message end
+GetInventoryItemID = function(_, slot) return slot == 16 and 1001 or nil end
+ns.SlashCommands:Handle("status")
+assert(printed == "Tank is equipped.")
+GetInventoryItemID = function(_, slot) return slot == 16 and 2001 or nil end
+ns.SlashCommands:Handle("status")
+assert(printed == "Arsenal B is equipped.")
+GetInventoryItemID = function() return nil end
+ns.SlashCommands:Handle("status")
+assert(printed == string.format(ns.L.ACTIVE_OTHER, "Tank"))
 
 print("test_options_runtime.lua: ok")
